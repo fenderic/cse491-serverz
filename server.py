@@ -40,7 +40,7 @@ def handle_connection(c):
                 'Content-type: text/html\r\n' + \
                 '\r\n' + \
                 '<h1>Hello, world.</h1>' + \
-                'This is fenderic\'s Web server.' + \
+                'This is fenderic\'s Web server.<br>' + \
                 '<a href= /content>Content</a><br>' + \
                 '<a href= /file>File</a><br>' + \
                 '<a href= /image>Image</a><br>')
