@@ -30,44 +30,53 @@ def main():
 
 def handle_connection(c):
     
-    req = c.recv(1000)          # Request
-    path = req.split('\r\n')[0].split(' ')[1]
-                                # Grabbing the path from the request
+    req = c.recv(1000)                          # Request
+    path = req.split('\r\n')[0].split(' ')[1]   # Path
+    method = req.split('\r\n')[0].split(' ')[0] # HTTP Method
 
-    if path == '/':
-
-        c.send('HTTP/1.0 200 OK\r\n' + \
-                'Content-type: text/html\r\n' + \
-                '\r\n' + \
-                '<h1>Hello, world.</h1>' + \
-                'This is fenderic\'s Web server.<br>' + \
-                '<a href= /content>Content</a><br>' + \
-                '<a href= /file>File</a><br>' + \
-                '<a href= /image>Image</a><br>')
-
-    elif path == '/content':
+    if method == 'POST':
 
         c.send('HTTP/1.0 200 OK\r\n' + \
                 'Content-type: text/html\r\n' + \
                 '\r\n' + \
-                '<h1>Content page</h1>' + \
-                'words words words')
+                'got a POST')
 
-    elif path == '/file':
+    else:
 
-        c.send('HTTP/1.0 200 OK\r\n' + \
-                'Content-type: text/html\r\n' + \
-                '\r\n' + \
-                '<h1>File page</h1>' + \
-                'cabinet')
+        if path == '/':
 
-    elif path == '/image':
+            c.send('HTTP/1.0 200 OK\r\n' + \
+                    'Content-type: text/html\r\n' + \
+                    '\r\n' + \
+                    '<h1>Hello, world.</h1>' + \
+                    'This is fenderic\'s Web server.<br>' + \
+                    '<a href= /content>Content</a><br>' + \
+                    '<a href= /file>File</a><br>' + \
+                    '<a href= /image>Image</a><br>')
 
-        c.send('HTTP/1.0 200 OK\r\n' + \
-                'Content-type: text/html\r\n' + \
-                '\r\n' + \
-                '<h1>Image page</h1>' + \
-                'imagine that')
+        elif path == '/content':
+
+            c.send('HTTP/1.0 200 OK\r\n' + \
+                    'Content-type: text/html\r\n' + \
+                    '\r\n' + \
+                    '<h1>Content page</h1>' + \
+                    'words words words')
+
+        elif path == '/file':
+
+            c.send('HTTP/1.0 200 OK\r\n' + \
+                    'Content-type: text/html\r\n' + \
+                    '\r\n' + \
+                    '<h1>File page</h1>' + \
+                    'cabinet')
+
+        elif path == '/image':
+
+            c.send('HTTP/1.0 200 OK\r\n' + \
+                    'Content-type: text/html\r\n' + \
+                    '\r\n' + \
+                    '<h1>Image page</h1>' + \
+                    'imagine that')
 
     c.close()
 
