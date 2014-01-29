@@ -74,7 +74,12 @@ def index_conn(c):
             'This is fenderic\'s Web server.<br>' + \
             '<a href= /content>Content</a><br>' + \
             '<a href= /file>File</a><br>' + \
-            '<a href= /image>Image</a><br>')
+            '<a href= /image>Image</a><br>' + \
+            '<form action="/submit" method="GET">\n' + \
+            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+            '<input type="submit" value="Submit">\n\n' + \
+            '</form>')
 
 
 def content_conn(c):

@@ -29,14 +29,20 @@ class FakeConnection(object):
 
 def test_handle_connection():
     conn = FakeConnection("GET / HTTP/1.0\r\n\r\n")
+
     expected_return = 'HTTP/1.0 200 OK\r\n' + \
-                      'Content-type: text/html\r\n' + \
-                      '\r\n' + \
-                      '<h1>Hello, world.</h1>' + \
-                      'This is fenderic\'s Web server.<br>' + \
-                      '<a href= /content>Content</a><br>' + \
-                      '<a href= /file>File</a><br>' + \
-                      '<a href= /image>Image</a><br>'
+                        'Content-type: text/html\r\n' + \
+                        '\r\n' + \
+                        '<h1>Hello, world.</h1>' + \
+                        'This is fenderic\'s Web server.<br>' + \
+                        '<a href= /content>Content</a><br>' + \
+                        '<a href= /file>File</a><br>' + \
+                        '<a href= /image>Image</a><br>' + \
+                        '<form action="/submit" method="GET">\n' + \
+                        '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+                        '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+                        '<input type="submit" value="Submit">\n\n' + \
+                        '</form>'
 
     server.handle_connection(conn)
 
@@ -87,7 +93,7 @@ def test_handle_connection_post():
     expected_return = 'HTTP/1.0 200 OK\r\n' + \
                       'Content-type: text/html\r\n' + \
                       '\r\n' + \
-                      'POST'
+                      'got a POST'
 
     server.handle_connection(conn)
 
