@@ -45,40 +45,64 @@ def handle_connection(c):
 
         if path == '/':
 
-            c.send('HTTP/1.0 200 OK\r\n' + \
-                    'Content-type: text/html\r\n' + \
-                    '\r\n' + \
-                    '<h1>Hello, world.</h1>' + \
-                    'This is fenderic\'s Web server.<br>' + \
-                    '<a href= /content>Content</a><br>' + \
-                    '<a href= /file>File</a><br>' + \
-                    '<a href= /image>Image</a><br>')
+            index_conn(c)
 
         elif path == '/content':
 
-            c.send('HTTP/1.0 200 OK\r\n' + \
-                    'Content-type: text/html\r\n' + \
-                    '\r\n' + \
-                    '<h1>Content page</h1>' + \
-                    'words words words')
+            content_conn(c)
 
         elif path == '/file':
 
-            c.send('HTTP/1.0 200 OK\r\n' + \
-                    'Content-type: text/html\r\n' + \
-                    '\r\n' + \
-                    '<h1>File page</h1>' + \
-                    'cabinet')
+            file_conn(c)
 
         elif path == '/image':
 
-            c.send('HTTP/1.0 200 OK\r\n' + \
-                    'Content-type: text/html\r\n' + \
-                    '\r\n' + \
-                    '<h1>Image page</h1>' + \
-                    'imagine that')
+            image_conn(c)
+
+
 
     c.close()
+
+
+
+def index_conn(c):
+
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            '<h1>Hello, world.</h1>' + \
+            'This is fenderic\'s Web server.<br>' + \
+            '<a href= /content>Content</a><br>' + \
+            '<a href= /file>File</a><br>' + \
+            '<a href= /image>Image</a><br>')
+
+
+def content_conn(c):
+    
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            '<h1>Content page</h1>' + \
+            'words words words')
+
+
+def file_conn(c):
+
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            '<h1>File page</h1>' + \
+            'cabinet')
+
+
+def image_conn(c):
+    
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            '<h1>Image page</h1>' + \
+            'imagine that')
+
 
 
 if __name__ == '__main__':
