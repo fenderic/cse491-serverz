@@ -2,14 +2,18 @@
 
  * Initialized repository, created server.py and README.
 
-<<<<<<< HEAD
-2014-01-22 Eric Austin austine5 fenderic
-
- * Completed Homework 2.  Added additional GET page responses and POST
-   response.  And testing for them all.
-=======
 
 2014-01-15 Eric Austin 
 
  * Updated server.py to include the HTTP 1.0 response and print out my netID and git username.
->>>>>>> 6e16d25537309775c833406a2ecfa55a5cef780d
+
+
+2014-01-22 Eric Austin
+
+ * Completed Homework 2.  Added additional GET page responses and POST
+   response.  And testing for them all.
+
+
+2014-01-29 Eric Austin
+
+ * Completed Homework 3. Added POST and GET forms and tests.
