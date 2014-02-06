@@ -38,14 +38,20 @@ def test_handle_connection():
                         '<a href= /content>Content</a><br>' + \
                         '<a href= /file>File</a><br>' + \
                         '<a href= /image>Image</a><br>' + \
-                        'GET Form' + \
+                        '<br> GET Form' + \
                         '<form action="/submit" method="GET">\n' + \
                         '<p>First Name: <input type="text" name="firstname"></p>\n' + \
                         '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
                         '<input type="submit" value="Submit">\n\n' + \
                         '</form>' + \
-                        'POST Form' + \
+                        '<br> POST Form' + \
                         '<form action="/submit" method="POST">\n' + \
+                        '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+                        '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+                        '<input type="submit" value="Submit">\n\n' + \
+                        '</form>' + \
+                        '<br> POST Form (multipart/form-data)' + \
+                        '<form action="/submit" method="POST" enctype="multipart/form-data">\n' + \
                         '<p>First Name: <input type="text" name="firstname"></p>\n' + \
                         '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
                         '<input type="submit" value="Submit">\n\n' + \
@@ -71,18 +77,25 @@ def test_handle_connection_post():
                         '<a href= /content>Content</a><br>' + \
                         '<a href= /file>File</a><br>' + \
                         '<a href= /image>Image</a><br>' + \
-                        'GET Form' + \
+                        '<br> GET Form' + \
                         '<form action="/submit" method="GET">\n' + \
                         '<p>First Name: <input type="text" name="firstname"></p>\n' + \
                         '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
                         '<input type="submit" value="Submit">\n\n' + \
                         '</form>' + \
-                        'POST Form' + \
+                        '<br> POST Form' + \
                         '<form action="/submit" method="POST">\n' + \
                         '<p>First Name: <input type="text" name="firstname"></p>\n' + \
                         '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
                         '<input type="submit" value="Submit">\n\n' + \
+                        '</form>' + \
+                        '<br> POST Form (multipart/form-data)' + \
+                        '<form action="/submit" method="POST" enctype="multipart/form-data">\n' + \
+                        '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+                        '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+                        '<input type="submit" value="Submit">\n\n' + \
                         '</form>'
+
 
 
     server.handle_connection(conn)
