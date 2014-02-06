@@ -7,6 +7,9 @@ import random
 import socket
 import time
 import urlparse
+import cgi
+from StringIO import StringIO
+
 
 def main():
 
@@ -31,7 +34,12 @@ def main():
 
 def handle_connection(c):
     
-    req = c.recv(1000)                          # Request
+#    req = c.recv(1000)                          # Request
+    req = c.recv(1)
+
+    while req[-4:] != '\r\n\r\n':
+        req += c.recv(1)
+
     req_line = req.split('\r\n')[0].split(' ')  # Request Line
 
     method = req_line[0]                        # HTTP Method
@@ -47,16 +55,26 @@ def handle_connection(c):
 #                '\r\n' + \
 #                'got a POST')
 
+        head_dict, content = parse_post_req(c, req)
+#        content = parse_post_req(c, req)
+
+        environ = {}
+        environ['REQUEST_METHOD'] = 'POST'
+
+        form = cgi.FieldStorage(headers = head_dict, fp = StringIO(content), environ = environ)
+
         if path == '/':
 
             handle_index(c,'')
 
         elif path == '/submit':
 
-            handle_submit(c,req.split('\r\n')[-1])
+#            handle_submit(c,req.split('\r\n')[-1])
+            handle_submit_post(c, form)
 
 
     else:
+
 
         if path == '/':
 
@@ -76,7 +94,7 @@ def handle_connection(c):
 
         elif path == '/submit':
 
-            handle_submit(c, parsed_url[4])
+            handle_submit_get(c, parsed_url[4])
 
             
 
@@ -94,19 +112,24 @@ def handle_index(c, params):
             '<a href= /content>Content</a><br>' + \
             '<a href= /file>File</a><br>' + \
             '<a href= /image>Image</a><br>' + \
-            'GET Form' + \
+            '<br> GET Form' + \
             '<form action="/submit" method="GET">\n' + \
             '<p>First Name: <input type="text" name="firstname"></p>\n' + \
             '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
             '<input type="submit" value="Submit">\n\n' + \
             '</form>' + \
-            'POST Form' + \
+            '<br> POST Form' + \
             '<form action="/submit" method="POST">\n' + \
             '<p>First Name: <input type="text" name="firstname"></p>\n' + \
             '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
             '<input type="submit" value="Submit">\n\n' + \
+            '</form>' + \
+            '<br> POST Form (multipart/form-data)' + \
+            '<form action="/submit" method="POST" enctype="multipart/form-data">\n' + \
+            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+            '<input type="submit" value="Submit">\n\n' + \
             '</form>')
-
 
 def handle_content(c, params):
     
@@ -135,7 +158,7 @@ def handle_image(c, params):
             'imagine that')
 
 
-def handle_submit(c, params):
+def handle_submit_get(c, params):
 
     namestring = params.split('&')
 
@@ -147,6 +170,50 @@ def handle_submit(c, params):
             '\r\n' + \
             'Hello Mr. %s %s.' % (first_name, last_name))
 
+
+def handle_submit_post(c, form):
+
+#    namestring = params.split('&')
+
+#    first_name = namestring[0].split('=')[1]
+#    last_name = namestring[1].split('=')[1]
+
+#    try:
+    first_name = form['firstname'].value
+#    except KeyError:
+#        first_name = ''
+#    try:
+    last_name = form['lastname'].value
+#    except KeyError:
+#        last_name = ''
+
+
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            'Hello Mr. %s %s.' % (first_name, last_name))
+
+
+def parse_post_req(c, req):
+
+    head_dict = dict()
+
+    req_split = req.split('\r\n')
+
+    # remove header whitespace
+#    remove_it = request.index('')
+
+    for i in range(1, len(req_split) -2):
+        header = req_split[i].split(": ", 1)
+        head_dict[header[0].lower()] = header[1]
+
+    content_length = int(head_dict['content-length'])
+#    content = StringIO('\r\n'.join(request[remove_it + 1:]))
+    content = ''
+    for i in range(0,content_length):
+        content += c.recv(1)
+
+    return head_dict, content
 
 
 if __name__ == '__main__':
