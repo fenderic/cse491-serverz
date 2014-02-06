@@ -34,8 +34,7 @@ def main():
 
 def handle_connection(c):
     
-#    req = c.recv(1000)                          # Request
-    req = c.recv(1)
+    req = c.recv(1)                             # Request
 
     while req[-4:] != '\r\n\r\n':
         req += c.recv(1)
@@ -50,13 +49,7 @@ def handle_connection(c):
 
     if method == 'POST':
 
-#        c.send('HTTP/1.0 200 OK\r\n' + \
-#                'Content-type: text/html\r\n' + \
-#                '\r\n' + \
-#                'got a POST')
-
         head_dict, content = parse_post_req(c, req)
-#        content = parse_post_req(c, req)
 
         environ = {}
         environ['REQUEST_METHOD'] = 'POST'
@@ -69,7 +62,6 @@ def handle_connection(c):
 
         elif path == '/submit':
 
-#            handle_submit(c,req.split('\r\n')[-1])
             handle_submit_post(c, form)
 
 
@@ -131,6 +123,7 @@ def handle_index(c, params):
             '<input type="submit" value="Submit">\n\n' + \
             '</form>')
 
+
 def handle_content(c, params):
     
     c.send('HTTP/1.0 200 OK\r\n' + \
@@ -173,20 +166,8 @@ def handle_submit_get(c, params):
 
 def handle_submit_post(c, form):
 
-#    namestring = params.split('&')
-
-#    first_name = namestring[0].split('=')[1]
-#    last_name = namestring[1].split('=')[1]
-
-#    try:
     first_name = form['firstname'].value
-#    except KeyError:
-#        first_name = ''
-#    try:
     last_name = form['lastname'].value
-#    except KeyError:
-#        last_name = ''
-
 
     c.send('HTTP/1.0 200 OK\r\n' + \
             'Content-type: text/html\r\n' + \
@@ -200,15 +181,13 @@ def parse_post_req(c, req):
 
     req_split = req.split('\r\n')
 
-    # remove header whitespace
-#    remove_it = request.index('')
 
     for i in range(1, len(req_split) -2):
         header = req_split[i].split(": ", 1)
         head_dict[header[0].lower()] = header[1]
 
     content_length = int(head_dict['content-length'])
-#    content = StringIO('\r\n'.join(request[remove_it + 1:]))
+
     content = ''
     for i in range(0,content_length):
         content += c.recv(1)
