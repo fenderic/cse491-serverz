@@ -8,8 +8,9 @@ import socket
 import time
 import urlparse
 import cgi
+import jinja2
 from StringIO import StringIO
-
+#import jinja2
 
 def main():
 
@@ -34,6 +35,9 @@ def main():
 
 def handle_connection(c):
     
+    loader = jinja2.FileSystemLoader('./templates')
+    env = jinja2.Environment(loader=loader)
+
     req = c.recv(1)                             # Request
 
     while req[-4:] != '\r\n\r\n':
@@ -43,9 +47,13 @@ def handle_connection(c):
 
     method = req_line[0]                        # HTTP Method
 
-    parsed_url = urlparse.urlparse(req_line[1]) # Parsed URL
-    path = parsed_url[2]                        # Path
-
+    try:
+        parsed_url = urlparse.urlparse(req_line[1]) # Parsed URL
+        path = parsed_url[2]                        # Path
+    except:
+        path = "/404"
+        notfound(c,'', env)
+        return
 
     if method == 'POST':
 
@@ -58,121 +66,157 @@ def handle_connection(c):
 
         if path == '/':
 
-            handle_index(c,'')
+            handle_index(c, '', env)
 
         elif path == '/submit':
 
-            handle_submit_post(c, form)
+            handle_submit_post(c, form, env)
 
-
+        else:
+            handle_404(c, '', env)
     else:
 
 
         if path == '/':
 
-            handle_index(c,'')
+            handle_index(c, '', env)
 
         elif path == '/content':
 
-            handle_content(c,'')
+            handle_content(c, '', env)
 
         elif path == '/file':
 
-            handle_file(c,'')
+            handle_file(c, '', env)
 
         elif path == '/image':
 
-            handle_image(c,'')
+            handle_image(c, '', env)
 
         elif path == '/submit':
 
-            handle_submit_get(c, parsed_url[4])
+            handle_submit_get(c, parsed_url[4], env)
 
-            
+        else:
+            handle_404(c, '', env)
 
     c.close()
 
 
 
-def handle_index(c, params):
+def handle_index(c, params, env):
 
-    c.send('HTTP/1.0 200 OK\r\n' + \
+    response = 'HTTP/1.0 200 OK\r\n' + \
             'Content-type: text/html\r\n' + \
             '\r\n' + \
-            '<h1>Hello, world.</h1>' + \
-            'This is fenderic\'s Web server.<br>' + \
-            '<a href= /content>Content</a><br>' + \
-            '<a href= /file>File</a><br>' + \
-            '<a href= /image>Image</a><br>' + \
-            '<br> GET Form' + \
-            '<form action="/submit" method="GET">\n' + \
-            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
-            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
-            '<input type="submit" value="Submit">\n\n' + \
-            '</form>' + \
-            '<br> POST Form' + \
-            '<form action="/submit" method="POST">\n' + \
-            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
-            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
-            '<input type="submit" value="Submit">\n\n' + \
-            '</form>' + \
-            '<br> POST Form (multipart/form-data)' + \
-            '<form action="/submit" method="POST" enctype="multipart/form-data">\n' + \
-            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
-            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
-            '<input type="submit" value="Submit">\n\n' + \
-            '</form>')
+            env.get_template('index.html').render()
+
+    c.send(response)
+#            '<h1>Hello, world.</h1>' + \
+#            'This is fenderic\'s Web server.<br>' + \
+#            '<a href= /content>Content</a><br>' + \
+#            '<a href= /file>File</a><br>' + \
+#            '<a href= /image>Image</a><br>' + \
+#            '<br> GET Form' + \
+#            '<form action="/submit" method="GET">\n' + \
+#            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+#            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+#            '<input type="submit" value="Submit">\n\n' + \
+#            '</form>' + \
+#            '<br> POST Form' + \
+#            '<form action="/submit" method="POST">\n' + \
+#            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+#            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+#            '<input type="submit" value="Submit">\n\n' + \
+#            '</form>' + \
+#            '<br> POST Form (multipart/form-data)' + \
+#            '<form action="/submit" method="POST" enctype="multipart/form-data">\n' + \
+#            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+#            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+#            '<input type="submit" value="Submit">\n\n' + \
+#            '</form>')
 
 
-def handle_content(c, params):
+def handle_content(c, params, env):
     
-    c.send('HTTP/1.0 200 OK\r\n' + \
+    response = 'HTTP/1.0 200 OK\r\n' + \
             'Content-type: text/html\r\n' + \
             '\r\n' + \
-            '<h1>Content page</h1>' + \
-            'words words words')
+            env.get_template('content.html').render()
+#            '<h1>Content page</h1>' + \
+#            'words words words')
+
+    c.send(response)
 
 
-def handle_file(c, params):
+def handle_file(c, params, env):
 
-    c.send('HTTP/1.0 200 OK\r\n' + \
+    response = 'HTTP/1.0 200 OK\r\n' + \
             'Content-type: text/html\r\n' + \
             '\r\n' + \
-            '<h1>File page</h1>' + \
-            'cabinet')
+            env.get_template('file.html').render()
+#            '<h1>File page</h1>' + \
+#            'cabinet')
+
+    c.send(response)
 
 
-def handle_image(c, params):
+def handle_image(c, params, env):
     
-    c.send('HTTP/1.0 200 OK\r\n' + \
+    response = 'HTTP/1.0 200 OK\r\n' + \
             'Content-type: text/html\r\n' + \
             '\r\n' + \
-            '<h1>Image page</h1>' + \
-            'imagine that')
+            env.get_template('image.html').render()
+#            '<h1>Image page</h1>' + \
+#            'imagine that')
 
+    c.send(response)
 
-def handle_submit_get(c, params):
+def handle_submit_get(c, params, env):
 
     namestring = params.split('&')
 
     first_name = namestring[0].split('=')[1]
     last_name = namestring[1].split('=')[1]
+ 
+    vars = dict(first_name = first_name, last_name = last_name)
+    template = env.get_template('submit.html')
 
-    c.send('HTTP/1.0 200 OK\r\n' + \
+
+    response = 'HTTP/1.0 200 OK\r\n' + \
             'Content-type: text/html\r\n' + \
             '\r\n' + \
-            'Hello Mr. %s %s.' % (first_name, last_name))
+            env.get_template('submit.html').render(vars)
+#            'Hello Mr. %s %s.' % (first_name, last_name))
 
+    c.send(response)
 
-def handle_submit_post(c, form):
+def handle_submit_post(c, form, env):
 
     first_name = form['firstname'].value
     last_name = form['lastname'].value
+ 
+    vars = dict(first_name = first_name, last_name = last_name)
+    template = env.get_template('submit.html')
 
-    c.send('HTTP/1.0 200 OK\r\n' + \
+
+    response = 'HTTP/1.0 200 OK\r\n' + \
             'Content-type: text/html\r\n' + \
             '\r\n' + \
-            'Hello Mr. %s %s.' % (first_name, last_name))
+            env.get_template('submit.html').render(vars)
+#            'Hello Mr. %s %s.' % (first_name, last_name))
+
+    c.send(response)
+   
+
+def handle_404(c, params, env):
+
+    response = 'HTTP/1.0 404 Not Found\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            env.get_template('404.html').render()
+
+    c.send(response)
 
 
 def parse_post_req(c, req):
