@@ -6,6 +6,7 @@
 import random
 import socket
 import time
+import urlparse
 
 def main():
 
@@ -31,54 +32,121 @@ def main():
 def handle_connection(c):
     
     req = c.recv(1000)                          # Request
-    path = req.split('\r\n')[0].split(' ')[1]   # Path
-    method = req.split('\r\n')[0].split(' ')[0] # HTTP Method
+    req_line = req.split('\r\n')[0].split(' ')  # Request Line
+
+    method = req_line[0]                        # HTTP Method
+
+    parsed_url = urlparse.urlparse(req_line[1]) # Parsed URL
+    path = parsed_url[2]                        # Path
+
 
     if method == 'POST':
 
-        c.send('HTTP/1.0 200 OK\r\n' + \
-                'Content-type: text/html\r\n' + \
-                '\r\n' + \
-                'got a POST')
+#        c.send('HTTP/1.0 200 OK\r\n' + \
+#                'Content-type: text/html\r\n' + \
+#                '\r\n' + \
+#                'got a POST')
+
+        if path == '/':
+
+            handle_index(c,'')
+
+        elif path == '/submit':
+
+            handle_submit(c,req.split('\r\n')[-1])
+
 
     else:
 
         if path == '/':
 
-            c.send('HTTP/1.0 200 OK\r\n' + \
-                    'Content-type: text/html\r\n' + \
-                    '\r\n' + \
-                    '<h1>Hello, world.</h1>' + \
-                    'This is fenderic\'s Web server.<br>' + \
-                    '<a href= /content>Content</a><br>' + \
-                    '<a href= /file>File</a><br>' + \
-                    '<a href= /image>Image</a><br>')
+            handle_index(c,'')
 
         elif path == '/content':
 
-            c.send('HTTP/1.0 200 OK\r\n' + \
-                    'Content-type: text/html\r\n' + \
-                    '\r\n' + \
-                    '<h1>Content page</h1>' + \
-                    'words words words')
+            handle_content(c,'')
 
         elif path == '/file':
 
-            c.send('HTTP/1.0 200 OK\r\n' + \
-                    'Content-type: text/html\r\n' + \
-                    '\r\n' + \
-                    '<h1>File page</h1>' + \
-                    'cabinet')
+            handle_file(c,'')
 
         elif path == '/image':
 
-            c.send('HTTP/1.0 200 OK\r\n' + \
-                    'Content-type: text/html\r\n' + \
-                    '\r\n' + \
-                    '<h1>Image page</h1>' + \
-                    'imagine that')
+            handle_image(c,'')
+
+        elif path == '/submit':
+
+            handle_submit(c, parsed_url[4])
+
+            
 
     c.close()
+
+
+
+def handle_index(c, params):
+
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            '<h1>Hello, world.</h1>' + \
+            'This is fenderic\'s Web server.<br>' + \
+            '<a href= /content>Content</a><br>' + \
+            '<a href= /file>File</a><br>' + \
+            '<a href= /image>Image</a><br>' + \
+            'GET Form' + \
+            '<form action="/submit" method="GET">\n' + \
+            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+            '<input type="submit" value="Submit">\n\n' + \
+            '</form>' + \
+            'POST Form' + \
+            '<form action="/submit" method="POST">\n' + \
+            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
+            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
+            '<input type="submit" value="Submit">\n\n' + \
+            '</form>')
+
+
+def handle_content(c, params):
+    
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            '<h1>Content page</h1>' + \
+            'words words words')
+
+
+def handle_file(c, params):
+
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            '<h1>File page</h1>' + \
+            'cabinet')
+
+
+def handle_image(c, params):
+    
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            '<h1>Image page</h1>' + \
+            'imagine that')
+
+
+def handle_submit(c, params):
+
+    namestring = params.split('&')
+
+    first_name = namestring[0].split('=')[1]
+    last_name = namestring[1].split('=')[1]
+
+    c.send('HTTP/1.0 200 OK\r\n' + \
+            'Content-type: text/html\r\n' + \
+            '\r\n' + \
+            'Hello Mr. %s %s.' % (first_name, last_name))
+
 
 
 if __name__ == '__main__':
