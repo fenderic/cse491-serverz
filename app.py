@@ -5,7 +5,7 @@
 from wsgiref.util import setup_testing_defaults
 
 import jinja2
-
+import cgi
 # A relatively simple WSGI application. It's going to print out the
 # environment dictionary after being updated by setup_testing_defaults
 def simple_app(environ, start_response):
@@ -13,6 +13,7 @@ def simple_app(environ, start_response):
 
     loader = jinja2.FileSystemLoader('./templates')
     env = jinja2.Environment(loader=loader)
+
 
     status = '200 OK'
     headers = [('Content-type', 'text/html')]
@@ -23,6 +24,7 @@ def simple_app(environ, start_response):
            for key, value in environ.iteritems()]
     ret.insert(0, "This is your environ.  Hello, world!\n\n")
 
+    
     method = environ['REQUEST_METHOD']
     path = environ['PATH_INFO']
     
@@ -30,8 +32,6 @@ def simple_app(environ, start_response):
 
     if method == "POST":
         
-        form = cgi.FieldStorage(headers = headers_dict, fp = StringIO(content), environ = environ)
-
         if path == '/':
             
             return handle_index('', env)
@@ -39,7 +39,9 @@ def simple_app(environ, start_response):
 
         elif path == '/submit':
             
-            return handle_submit_post('', env)
+            #return handle_submit_post('', env)
+            #return handle_submit_post(form, env)
+            return handle_submit_post(environ, env)
 
 
         else:
@@ -71,7 +73,7 @@ def simple_app(environ, start_response):
 
         elif path == '/submit':
 
-            return handle_submit_get(parsed_url[4], env)
+            return handle_submit_get(environ, env)
 
 
         else:
@@ -122,7 +124,8 @@ def handle_404(params, env):
 
 def handle_submit_get(params, env):
 
-    namestring = params.split('&')
+    namestring = params['QUERY_STRING']
+    namestring = namestring.split('&')
 
     first_name = namestring[0].split('=')[1]
     last_name = namestring[1].split('=')[1]
@@ -131,9 +134,33 @@ def handle_submit_get(params, env):
     return str(env.get_template('submit.html').render(name))
 
 
-def handle_submit_post(params, env):
+def handle_submit_post(environ, env):
 
-    return str(env.get_template('submit.html').render())
+    
+    headers = {}
+    for i in environ.keys():
+        headers[i.lower()] = environ[i]
+
+    print "before form!!!!!"
+    print "before headers"
+    print headers
+    print "after headers"
+    print "environ['wsgi.input']"
+    print environ['wsgi.input']
+    print "environ"
+    print environ
+
+    # breaking on something here.......
+
+    form = cgi.FieldStorage(headers = headers, fp = environ['wsgi.input'], environ = environ)
+
+    print "after form!!!!"
+
+    first_name = form['firstname'].value
+    last_name = form['lastname'].value
+    name = dict(first_name = first_name, last_name = last_name)
+
+    return str(env.get_template('submit.html').render(name))
 
 
 
