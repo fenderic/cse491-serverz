@@ -226,7 +226,7 @@ def parse_post_req(c, req):
     req_split = req.split('\r\n')
 
 
-    for i in range(1, len(req_split) -2):
+    for i in range(1, len(req_split) - 2):
         header = req_split[i].split(": ", 1)
         head_dict[header[0].lower()] = header[1]
 
