@@ -63,11 +63,13 @@ def simple_app(environ, start_response):
 
         elif path == '/file':
 
+            headers = [('Content-type', 'text/plain')]
             return handle_file('', env)
 
 
         elif path == '/image':
 
+            headers = [('Content-type', 'image/jpeg')]
             return handle_image('', env)
 
 
@@ -109,12 +111,19 @@ def handle_content(params, env):
 
 def handle_file(params, env):
 
-    return str(env.get_template('file.html').render())
-
+#    return str(env.get_template('file.html').render())
+    fp = open('./files/quote.txt', 'rb')
+    data = fp.read()
+    fp.close()
+    return data
 
 def handle_image(params, env):
 
-    return str(env.get_template('image.html').render())
+#    return str(env.get_template('image.html').render())
+    fp = open('./img/life-aquatic-with-steve-zissou-3.jpg', 'rb')
+    data = fp.read()
+    fp.close()
+    return data
 
 
 def handle_404(params, env):
