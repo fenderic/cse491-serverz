@@ -112,30 +112,6 @@ def handle_index(c, params, env):
             env.get_template('index.html').render()
 
     c.send(response)
-#            '<h1>Hello, world.</h1>' + \
-#            'This is fenderic\'s Web server.<br>' + \
-#            '<a href= /content>Content</a><br>' + \
-#            '<a href= /file>File</a><br>' + \
-#            '<a href= /image>Image</a><br>' + \
-#            '<br> GET Form' + \
-#            '<form action="/submit" method="GET">\n' + \
-#            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
-#            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
-#            '<input type="submit" value="Submit">\n\n' + \
-#            '</form>' + \
-#            '<br> POST Form' + \
-#            '<form action="/submit" method="POST">\n' + \
-#            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
-#            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
-#            '<input type="submit" value="Submit">\n\n' + \
-#            '</form>' + \
-#            '<br> POST Form (multipart/form-data)' + \
-#            '<form action="/submit" method="POST" enctype="multipart/form-data">\n' + \
-#            '<p>First Name: <input type="text" name="firstname"></p>\n' + \
-#            '<p>Last Name: <input type="text" name="lastname"></p>\n' + \
-#            '<input type="submit" value="Submit">\n\n' + \
-#            '</form>')
-
 
 def handle_content(c, params, env):
     
@@ -143,8 +119,6 @@ def handle_content(c, params, env):
             'Content-type: text/html\r\n' + \
             '\r\n' + \
             env.get_template('content.html').render()
-#            '<h1>Content page</h1>' + \
-#            'words words words')
 
     c.send(response)
 
@@ -155,8 +129,6 @@ def handle_file(c, params, env):
             'Content-type: text/html\r\n' + \
             '\r\n' + \
             env.get_template('file.html').render()
-#            '<h1>File page</h1>' + \
-#            'cabinet')
 
     c.send(response)
 
@@ -167,8 +139,6 @@ def handle_image(c, params, env):
             'Content-type: text/html\r\n' + \
             '\r\n' + \
             env.get_template('image.html').render()
-#            '<h1>Image page</h1>' + \
-#            'imagine that')
 
     c.send(response)
 
@@ -187,7 +157,6 @@ def handle_submit_get(c, params, env):
             'Content-type: text/html\r\n' + \
             '\r\n' + \
             env.get_template('submit.html').render(vars)
-#            'Hello Mr. %s %s.' % (first_name, last_name))
 
     c.send(response)
 
@@ -204,7 +173,6 @@ def handle_submit_post(c, form, env):
             'Content-type: text/html\r\n' + \
             '\r\n' + \
             env.get_template('submit.html').render(vars)
-#            'Hello Mr. %s %s.' % (first_name, last_name))
 
     c.send(response)
    
