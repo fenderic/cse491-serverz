@@ -12,6 +12,10 @@ class RootDirectory(Directory):
     def index(self):
         return html.render('index.html')
 
+    @export(name='jquery')
+    def jquery(self)
+        return html.render('jquery-1.3.2.min.js')
+
     @export(name='upload')
     def upload(self):
         return html.render('upload.html')
