@@ -10,9 +10,9 @@ from StringIO import StringIO
 
 #from app import make_app
 import quixote
-from quixote.demo import create_publisher
+#from quixote.demo import create_publisher
 #from quixote.demo.mini_demo import create_publisher
-#from quixote.demo.altdemo import create_publisher
+from quixote.demo.altdemo import create_publisher
 
 _the_app = None
 def make_app():
@@ -49,6 +49,7 @@ def handle_connection(c):
     env['CONTENT_TYPE'] = 'text/html'
     env['CONTENT_LENGTH'] = 0
     env['SCRIPT_NAME'] = ''
+    env['HTTP_COOKIE'] = headers['cookie'] if 'cookie' in headers.keys() else ''
 
     def start_response(status, response_headers):
 
