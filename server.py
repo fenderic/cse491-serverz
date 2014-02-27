@@ -10,7 +10,12 @@ import urlparse
 import cgi
 import jinja2
 from StringIO import StringIO
+from wsgiref.validate import validator
 #import jinja2
+import quixote
+import imageapp
+imageapp.setup()
+p = imageapp.create_publisher()
 
 def main():
 
