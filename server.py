@@ -1,215 +1,156 @@
 # Eric Austin - austine5 - fenderic
 
-
 #!/usr/bin/env python
-
 import random
 import socket
 import time
-import urlparse
-import cgi
-import jinja2
+from urlparse import urlparse
 from StringIO import StringIO
 from wsgiref.validate import validator
-#import jinja2
-import quixote
-import imageapp
-imageapp.setup()
-p = imageapp.create_publisher()
+from sys import stderr
+
+## My app.py
+from app import make_app
+##
+
+## Quixhote
+#import quixote
+#from quixote.demo.altdemo import create_publisher
+#p = create_publisher()
+##
+
+## Image app
+#import quixote
+#import imageapp
+#imageapp.setup()
+#p = imageapp.create_publisher()
+##
+
+def handle_connection(conn, port):
+    """Takes a socket connection, and serves a WSGI app over it.
+        Connection is closed when app is served."""
+    
+    # Start reading in data from the connection
+    req = conn.recv(1)
+    count = 0
+    env = {}
+    while req[-4:] != '\r\n\r\n':
+        new = conn.recv(1)
+        if new == '':
+            return
+        else:
+            req += new
+
+    # Parse the headers we've received
+    req, data = req.split('\r\n',1)
+    headers = {}
+    for line in data.split('\r\n')[:-2]:
+        key, val = line.split(': ', 1)
+        headers[key.lower()] = val
+
+    # Parse the path and related env info
+    urlInfo = urlparse(req.split(' ', 3)[1])
+    env['REQUEST_METHOD'] = 'GET'
+    env['PATH_INFO'] = urlInfo[2]
+    env['QUERY_STRING'] = urlInfo[4]
+    env['CONTENT_TYPE'] = 'text/html'
+    env['CONTENT_LENGTH'] = str(0)
+    env['SCRIPT_NAME'] = ''
+    env['SERVER_NAME'] = socket.getfqdn()
+    env['SERVER_PORT'] = str(port)
+    env['wsgi.version'] = (1, 0)
+    env['wsgi.errors'] = stderr
+    env['wsgi.multithread']  = False
+    env['wsgi.multiprocess'] = False
+    env['wsgi.run_once']     = False
+    env['wsgi.url_scheme'] = 'http'
+    env['HTTP_COOKIE'] = headers['cookie'] if 'cookie' in headers.keys() else ''
+
+    # Start response function for WSGI interface
+    def start_response(status, response_headers):
+        """Send the initial HTTP header, with status code 
+            and any other provided headers"""
+        
+        # Send HTTP status
+        conn.send('HTTP/1.0 ')
+        conn.send(status)
+        conn.send('\r\n')
+
+        # Send the response headers
+        for pair in response_headers:
+            key, header = pair
+            conn.send(key + ': ' + header + '\r\n')
+        conn.send('\r\n')
+    
+    # If we received a POST request, collect the rest of the data
+    content = ''
+    if req.startswith('POST '):
+        # Set up extra env variables
+        env['REQUEST_METHOD'] = 'POST'
+        env['CONTENT_LENGTH'] = str(headers['content-length'])
+        env['CONTENT_TYPE'] = headers['content-type']
+        # Continue receiving content up to content-length
+        cLen = int(headers['content-length'])
+        while len(content) < cLen:
+            content += conn.recv(1)
+        
+    # Set up a StringIO to mimic stdin for the FieldStorage in the app
+    env['wsgi.input'] = StringIO(content)
+    
+    # Get the application
+
+    ## My app.py
+    wsgi_app = make_app()
+    ## 
+    
+    ## Quixote alt.demo
+    #wsgi_app = quixote.get_wsgi_app()
+    ##
+
+    ## Imageapp
+    #wsgi_app = quixote.get_wsgi_app()
+    ##
+
+    ## VALIDATION ##
+    wsgi_app = validator(wsgi_app)
+    ## VALIDATION ##
+
+    result = wsgi_app(env, start_response)
+
+    # Serve the processed data
+    for data in result:
+        conn.send(data)
+
+    # Close the connection; we're done here
+    result.close()
+    conn.close()
 
 def main():
+    """Waits for a connection, then serves a WSGI app using handle_connection"""
+    # Create a socket object
+    sock = socket.socket()
+    
+    # Get local machine name (fully qualified domain name)
+    host = socket.getfqdn()
 
-    s = socket.socket()         # Create a socket object
-    host = socket.getfqdn()     # Get local machine name
+    # Bind to a (random) port
     port = random.randint(8000, 9999)
-    s.bind((host, port))        # Bind to the port
+    #port = 8088
+    sock.bind((host, port))
 
     print 'Starting server on', host, port
     print 'The Web server URL for this would be http://%s:%d/' % (host, port)
 
-    s.listen(5)                 # Now wait for client connection.
+    # Now wait for client connection.
+    sock.listen(5)
 
     print 'Entering infinite loop; hit CTRL-C to exit'
     while True:
         # Establish connection with client.    
-        c, (client_host, client_port) = s.accept()
+        conn, (client_host, client_port) = sock.accept()
         print 'Got connection from', client_host, client_port
-
-        handle_connection(c)
-
-
-def handle_connection(c):
-    
-    loader = jinja2.FileSystemLoader('./templates')
-    env = jinja2.Environment(loader=loader)
-
-    req = c.recv(1)                             # Request
-
-    while req[-4:] != '\r\n\r\n':
-        req += c.recv(1)
-
-    req_line = req.split('\r\n')[0].split(' ')  # Request Line
-
-    method = req_line[0]                        # HTTP Method
-
-    try:
-        parsed_url = urlparse.urlparse(req_line[1]) # Parsed URL
-        path = parsed_url[2]                        # Path
-    except:
-        path = "/404"
-        notfound(c,'', env)
-        return
-
-    if method == 'POST':
-
-        head_dict, content = parse_post_req(c, req)
-
-        environ = {}
-        environ['REQUEST_METHOD'] = 'POST'
-
-        form = cgi.FieldStorage(headers = head_dict, fp = StringIO(content), environ = environ)
-
-        if path == '/':
-
-            handle_index(c, '', env)
-
-        elif path == '/submit':
-
-            handle_submit_post(c, form, env)
-
-        else:
-            handle_404(c, '', env)
-    else:
-
-
-        if path == '/':
-
-            handle_index(c, '', env)
-
-        elif path == '/content':
-
-            handle_content(c, '', env)
-
-        elif path == '/file':
-
-            handle_file(c, '', env)
-
-        elif path == '/image':
-
-            handle_image(c, '', env)
-
-        elif path == '/submit':
-
-            handle_submit_get(c, parsed_url[4], env)
-
-        else:
-            handle_404(c, '', env)
-
-    c.close()
-
-
-
-def handle_index(c, params, env):
-
-    response = 'HTTP/1.0 200 OK\r\n' + \
-            'Content-type: text/html\r\n' + \
-            '\r\n' + \
-            env.get_template('index.html').render()
-
-    c.send(response)
-
-def handle_content(c, params, env):
-    
-    response = 'HTTP/1.0 200 OK\r\n' + \
-            'Content-type: text/html\r\n' + \
-            '\r\n' + \
-            env.get_template('content.html').render()
-
-    c.send(response)
-
-
-def handle_file(c, params, env):
-
-    response = 'HTTP/1.0 200 OK\r\n' + \
-            'Content-type: text/html\r\n' + \
-            '\r\n' + \
-            env.get_template('file.html').render()
-
-    c.send(response)
-
-
-def handle_image(c, params, env):
-    
-    response = 'HTTP/1.0 200 OK\r\n' + \
-            'Content-type: text/html\r\n' + \
-            '\r\n' + \
-            env.get_template('image.html').render()
-
-    c.send(response)
-
-def handle_submit_get(c, params, env):
-
-    namestring = params.split('&')
-
-    first_name = namestring[0].split('=')[1]
-    last_name = namestring[1].split('=')[1]
- 
-    vars = dict(first_name = first_name, last_name = last_name)
-    template = env.get_template('submit.html')
-
-
-    response = 'HTTP/1.0 200 OK\r\n' + \
-            'Content-type: text/html\r\n' + \
-            '\r\n' + \
-            env.get_template('submit.html').render(vars)
-
-    c.send(response)
-
-def handle_submit_post(c, form, env):
-
-    first_name = form['firstname'].value
-    last_name = form['lastname'].value
- 
-    vars = dict(first_name = first_name, last_name = last_name)
-    template = env.get_template('submit.html')
-
-
-    response = 'HTTP/1.0 200 OK\r\n' + \
-            'Content-type: text/html\r\n' + \
-            '\r\n' + \
-            env.get_template('submit.html').render(vars)
-
-    c.send(response)
-   
-
-def handle_404(c, params, env):
-
-    response = 'HTTP/1.0 404 Not Found\r\n' + \
-            'Content-type: text/html\r\n' + \
-            '\r\n' + \
-            env.get_template('404.html').render()
-
-    c.send(response)
-
-
-def parse_post_req(c, req):
-
-    head_dict = dict()
-
-    req_split = req.split('\r\n')
-
-
-    for i in range(1, len(req_split) - 2):
-        header = req_split[i].split(": ", 1)
-        head_dict[header[0].lower()] = header[1]
-
-    content_length = int(head_dict['content-length'])
-
-    content = ''
-    for i in range(0,content_length):
-        content += c.recv(1)
-
-    return head_dict, content
-
-if __name__ == '__main__':
+        handle_connection(conn, port)
+        
+# boilerplate
+if __name__ == "__main__":
     main()
