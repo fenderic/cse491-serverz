@@ -8,9 +8,10 @@ from urlparse import urlparse
 from StringIO import StringIO
 from wsgiref.validate import validator
 from sys import stderr
+import argparse
 
 ## My app.py
-from app import make_app
+#from app import make_app
 ##
 
 ## Quixhote
@@ -26,7 +27,8 @@ from app import make_app
 #p = imageapp.create_publisher()
 ##
 
-def handle_connection(conn, port):
+def handle_connection(conn, port, app):
+#def handle_connection(conn, port):
     """Takes a socket connection, and serves a WSGI app over it.
         Connection is closed when app is served."""
     
@@ -100,7 +102,7 @@ def handle_connection(conn, port):
     # Get the application
 
     ## My app.py
-    wsgi_app = make_app()
+    #wsgi_app = make_app()
     ## 
     
     ## Quixote alt.demo
@@ -110,6 +112,39 @@ def handle_connection(conn, port):
     ## Imageapp
     #wsgi_app = quixote.get_wsgi_app()
     ##
+
+    if app == 'altdemo':
+
+        import quixote
+        from quixote.demo.altdemo import create_publisher
+       
+        try:
+            p = create_publisher()
+        except RuntimeError:
+            pass
+
+        wsgi_app = quixote.get_wsgi_app()
+
+    elif app == 'image':
+
+        import quixote
+        import imageapp
+        from imageapp import create_publisher
+
+        try:
+            p = create_publisher()
+        except RuntimeError:
+            pass
+
+        imageapp.setup()
+        wsgi_app = quixote.get_wsgi_app()
+
+    elif app == 'myapp':
+
+        from app import make_app
+
+        wsgi_app = make_app()
+
 
     ## VALIDATION ##
     wsgi_app = validator(wsgi_app)
@@ -133,9 +168,21 @@ def main():
     # Get local machine name (fully qualified domain name)
     host = socket.getfqdn()
 
+
+    argParser = argparse.ArgumentParser(description='Set up WSGI server')
+    argParser.add_argument('-A', metavar='App', type=str, nargs=1, \
+            default='myapp', \
+            choices=['myapp', 'image', 'altdemo'], \
+            help='Select which app to run', dest='app')
+    argParser.add_argument('-p', metavar='Port', type=int, nargs=1, \
+            default=-1, help='Select a port to run on', \
+            dest='p')
+    argVals = argParser.parse_args()
     # Bind to a (random) port
-    port = random.randint(8000, 9999)
+    port = argVals.p[0] if argVals.p != -1 else random.randint(8000,9999)
+    #port = random.randint(8000, 9999)
     #port = 8088
+
     sock.bind((host, port))
 
     print 'Starting server on', host, port
@@ -145,11 +192,14 @@ def main():
     sock.listen(5)
 
     print 'Entering infinite loop; hit CTRL-C to exit'
+    # Whichever app we chose
+    app = argVals.app[0]
+    
     while True:
         # Establish connection with client.    
         conn, (client_host, client_port) = sock.accept()
         print 'Got connection from', client_host, client_port
-        handle_connection(conn, port)
+        handle_connection(conn, port, app)
         
 # boilerplate
 if __name__ == "__main__":
