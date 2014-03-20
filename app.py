@@ -112,12 +112,12 @@ def app(environ, start_response):
                }
 
     # Manually add all other available pages/images
-    for page in listdir('404'):
-        response['/404/' + page] = serveImage
-    for page in listdir('images'):
-        response['/img/' + page] = serveImage
-    for page in listdir('files'):
-        response['/files/' + page] = serveFile
+    #for page in listdir('404'):
+    #    response['/404/' + page] = serveImage
+    #for page in listdir('images'):
+    #    response['/img/' + page] = serveImage
+    #for page in listdir('files'):
+    #    response['/files/' + page] = serveFile
 
     # Basic connection information and set up templates
     loader = jinja2.FileSystemLoader('./templates')
