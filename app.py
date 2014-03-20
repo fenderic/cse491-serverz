@@ -31,6 +31,14 @@ def content(env, **kwargs):
     
     return (response_headers, data)
 
+def thumbnail(env, **kwargs):
+    response_headers = [('Content-type', 'text/html; charset="UTF-8"')]
+
+    template = env.get_template('thumbnail.html')
+    data = [template.render(kwargs).encode('utf-8')]
+
+    return (response_headers, data)
+
 def serveImage(env, **kwargs):
     # Set our response headers to indicate an image
     #response_headers = [('Content-type', 'image/jpeg')]
@@ -97,6 +105,7 @@ def app(environ, start_response):
                 '/content' : content,    \
                 '/file'    : File,  \
                 '/image'   : Image, \
+                '/thumbnail' : thumbnail, \
                 '/form'    : form,       \
                 '/submit'  : submit,     \
                 '404'      : fail,       \
