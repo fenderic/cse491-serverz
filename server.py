@@ -4,28 +4,13 @@
 import random
 import socket
 import time
+import os
 from urlparse import urlparse
 from StringIO import StringIO
 from wsgiref.validate import validator
 from sys import stderr
 import argparse
 
-## My app.py
-#from app import make_app
-##
-
-## Quixhote
-#import quixote
-#from quixote.demo.altdemo import create_publisher
-#p = create_publisher()
-##
-
-## Image app
-#import quixote
-#import imageapp
-#imageapp.setup()
-#p = imageapp.create_publisher()
-##
 
 def handle_connection(conn, port, app):
 #def handle_connection(conn, port):
@@ -101,18 +86,6 @@ def handle_connection(conn, port, app):
     
     # Get the application
 
-    ## My app.py
-    #wsgi_app = make_app()
-    ## 
-    
-    ## Quixote alt.demo
-    #wsgi_app = quixote.get_wsgi_app()
-    ##
-
-    ## Imageapp
-    #wsgi_app = quixote.get_wsgi_app()
-    ##
-
     if app == 'altdemo':
 
         import quixote
@@ -145,6 +118,22 @@ def handle_connection(conn, port, app):
 
         wsgi_app = make_app()
 
+    elif app == 'quotes':
+        
+        from webserve import Server
+        from quotes_app import QuotesApp
+        #os.chdir(app) 
+        q_app = QuotesApp('quotes.txt', './quotes')
+        Server(port, q_app).serve_forever()
+
+    elif app == 'chat':
+
+        from webserve import Server
+        from chat_app import ChatApp        
+        #os.chdir(app)
+        c_app = ChatApp('./chat')
+        Server(port, c_app).serve_forever()
+
 
     ## VALIDATION ##
     wsgi_app = validator(wsgi_app)
@@ -172,7 +161,7 @@ def main():
     argParser = argparse.ArgumentParser(description='Set up WSGI server')
     argParser.add_argument('-A', metavar='App', type=str, nargs=1, \
             default='myapp', \
-            choices=['myapp', 'image', 'altdemo'], \
+            choices=['myapp', 'image', 'altdemo', 'quotes', 'chat'], \
             help='Select which app to run', dest='app')
     argParser.add_argument('-p', metavar='Port', type=int, nargs=1, \
             default=-1, help='Select a port to run on', \
