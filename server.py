@@ -10,7 +10,7 @@ from StringIO import StringIO
 from wsgiref.validate import validator
 from sys import stderr
 import argparse
-import quotes
+#import quotes
 
 def handle_connection(conn, port, app):
 #def handle_connection(conn, port):
@@ -127,8 +127,9 @@ def handle_connection(conn, port, app):
         #os.chdir(app) 
         #q_app = QuotesApp('quotes.txt', './quotes')
         #Server(port, q_app).serve_forever()
-
-        wsgi_app = QuotesApp('quotes.txt', './quotes')
+        from quotes.apps import QuotesApp as make_app
+        wsgi_app = make_app('quotes/quotes.txt', 'quotes/html')
+        #wsgi_app = QuotesApp('quotes.txt', './quotes')
         #directory_path = './quotes/'
         #wsgi_app = quotes.create_quotes_app(directory_path + 'quotes.txt', directory_path + 'html')
 
