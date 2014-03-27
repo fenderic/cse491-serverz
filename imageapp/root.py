@@ -12,9 +12,9 @@ class RootDirectory(Directory):
     def index(self):
         return html.render('index.html')
 
-#    @export(name='jquery')
-#    def jquery(self)
-#        return html.render('jquery-1.3.2.min.js')
+    @export(name='jquery')
+    def jquery(self):
+        return html.render('jquery-1.3.2.min.js')
 
     @export(name='upload')
     def upload(self):
@@ -28,9 +28,9 @@ class RootDirectory(Directory):
         the_file = request.form['file']
         print dir(the_file)
         print 'received file with name:', the_file.base_filename
-        data = the_file.read(int(1e9))
+        data = the_file.read(the_file.get_size())
 
-        image.add_image(data)
+        image.add_image(the_file.base_filename, data)
 
         return quixote.redirect('./')
 
@@ -46,9 +46,9 @@ class RootDirectory(Directory):
         the_file = request.form['file']
         print dir(the_file)
         print 'received file with name:', the_file.base_filename
-        data = the_file.read(int(1e9))
+        data = the_file.read(the_file.get_size())
 
-        image.add_image(data)
+        image.add_image(the_file.base_filename, data)
 
         return html.render('upload2_received.html')
 
@@ -59,6 +59,13 @@ class RootDirectory(Directory):
     @export(name='image_raw')
     def image_raw(self):
         response = quixote.get_response()
-        response.set_content_type('image/png')
         img = image.get_latest_image()
-        return img
+
+        if img[0].split('.')[-1].lower() in ('jpeg', 'jpg'):
+            response.set_content_type('image/jpeg')
+        elif img[0].split('.')[-1].lower() in ('tif', 'tiff'):
+            response.set_content_type('image/tiff')
+        else:
+            response.set_content_type('image/png')
+        
+        return img[1]

@@ -106,10 +106,12 @@ def handle_connection(conn, port, app):
 
         try:
             p = create_publisher()
+            imageapp.setup()
+
         except RuntimeError:
             pass
 
-        imageapp.setup()
+        #imageapp.setup()
         wsgi_app = quixote.get_wsgi_app()
 
     elif app == 'myapp':
