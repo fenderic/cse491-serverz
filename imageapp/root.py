@@ -3,7 +3,7 @@ from quixote.directory import Directory, export, subdir
 from quixote.util import StaticFile
 import os.path
 
-from . import html, image
+from . import html, image, javascript
 
 class RootDirectory(Directory):
     _q_exports = []
@@ -12,9 +12,17 @@ class RootDirectory(Directory):
     def index(self):
         return html.render('index.html')
 
-    @export(name='jquery')
+#    @export(name='jquery')
+#    def jquery(self):
+#        return html.render('jquery-1.3.2.min.js')
+
+    @export(name='jquery.js')
     def jquery(self):
-        return html.render('jquery-1.3.2.min.js')
+        return javascript.render('jquery-1.11.0.min.js')
+
+    @export(name='ajaxUpload.js')
+    def ajax_upload(self):
+        return javascript.render('ajaxUpload.js')
 
     @export(name='upload')
     def upload(self):
