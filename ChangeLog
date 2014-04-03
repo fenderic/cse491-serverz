@@ -26,4 +26,13 @@
  * * * In command line type "python2.7 server.py -A image" and it will give you a link to an address.
  * * * Visit that address and you can use either of the uploaders to upload PNG, JPEG, JPG, TIFF, TIF
 
-
+* Completed Homework 10
+* * Project 3: AJAX Image Upload
+* * * Instructions:
+* * * In command line type "python2.7 server.py -A image" and it will give you a link to an address.
+* * * Visit that address and you can select AJAX Upload and then upload an
+image and it will load the image without changing the page.
+* * Project 4: Template
+* * * Instructions:
+* * * Just run the imageapp like above and you will see I have added the
+ugliest template on oswd.org that i could find.  It's called "grapes"
