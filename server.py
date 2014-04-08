@@ -103,6 +103,7 @@ def handle_connection(conn, port, app):
         import quixote
         import imageapp
         from imageapp import create_publisher
+        import sqlite3
 
         try:
             p = create_publisher()
@@ -113,6 +114,18 @@ def handle_connection(conn, port, app):
 
         #imageapp.setup()
         wsgi_app = quixote.get_wsgi_app()
+        db = sqlite3.connect('images.sqlite')
+        db.text_factory = bytes
+        c = db.cursor()
+        c.execute(
+            'CREATE TABLE IF NOT EXISTS image_store \
+            (i INTEGER PRIMARY KEY AUTOINCREMENT, image BLOB)'\
+            )
+        img = open('imageapp/dice.png', 'rb').read()
+        c.execute('INSERT INTO image_store (image) VALUES(?)', (img,))
+        db.commit()
+        db.close()
+        #
 
     elif app == 'myapp':
 
