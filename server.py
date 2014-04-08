@@ -146,6 +146,10 @@ def handle_connection(conn, port, app):
         wsgi_app = make_app('chat/html')
         #wsgi_app = chat.create_chat_app('./chat/html')
 
+    elif app == 'cookie':
+
+        import cookieapp
+        wsgi_app = cookieapp.wsgi_app
 
     ## VALIDATION ##
     wsgi_app = validator(wsgi_app)
@@ -173,7 +177,7 @@ def main():
     argParser = argparse.ArgumentParser(description='Set up WSGI server')
     argParser.add_argument('-A', metavar='App', type=str, nargs=1, \
             default='myapp', \
-            choices=['myapp', 'image', 'altdemo', 'quotes', 'chat'], \
+            choices=['myapp', 'image', 'altdemo', 'quotes', 'chat', 'cookie'], \
             help='Select which app to run', dest='app')
     argParser.add_argument('-p', metavar='Port', type=int, nargs=1, \
             default=-1, help='Select a port to run on', \

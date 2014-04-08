@@ -1,0 +1,14 @@
+.header {
+  color: #6B8A9;
+  font-size: 150%;
+}
+
+.link {
+  color: #F00;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #0F0;
+  text-decoration: underline;
+}
