@@ -33,3 +33,12 @@ def get_latest_image():
     i, image = c.fetchone()
     db.close()
     return image
+
+def get_first_image():
+    db = sqlite3.connect('images.sqlite')
+    db.text_factory = bytes
+    c = db.cursor()
+    c.execute('SELECT i,image FROM image_store ORDER BY i ASC LIMIT 1')
+    i, image = c.fetchone()
+    db.close()
+    return image

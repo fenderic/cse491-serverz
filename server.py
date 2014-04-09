@@ -143,6 +143,7 @@ def main():
                     'CREATE TABLE IF NOT EXISTS image_store \
                     (i INTEGER PRIMARY KEY AUTOINCREMENT, image BLOB)'\
                   )
+
         img = open('imageapp/dice.png', 'rb').read()
         c.execute("INSERT INTO image_store (image) VALUES(?)", (img,))
         db.commit()

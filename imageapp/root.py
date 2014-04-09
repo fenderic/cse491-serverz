@@ -12,18 +12,22 @@ class RootDirectory(Directory):
     def index(self):
         return html.render('index.html')
         
+        
     @export(name='jquery.js')
     def jquery(self):
         return javascript.render('jquery-1.11.0.min.js')
 
+        
     @export(name='ajaxUpload.js')
     def ajax_upload(self):
         return javascript.render('ajaxUpload.js')
+        
         
     @export(name='upload')
     def upload(self):
         return html.render('upload.html')
 
+        
     @export(name='upload_receive')
     def upload_receive(self):
         request = quixote.get_request()
@@ -43,6 +47,7 @@ class RootDirectory(Directory):
     def upload2(self):
         return html.render('upload2.html')
 
+        
     @export(name='upload2_receive')
     def upload2_receive(self):
         request = quixote.get_request()
@@ -57,13 +62,36 @@ class RootDirectory(Directory):
 
         return html.render('upload2_received.html')
         
+        
     @export(name='image')
     def image(self):
         return html.render('image.html')
 
+        
     @export(name='image_raw')
     def image_raw(self):
         response = quixote.get_response()
         response.set_content_type('image/png')
         img = image.get_latest_image()
+        return img        
+        
+    @export(name='image_raw2')
+    def image_raw2(self):
+        response = quixote.get_response()
+        response.set_content_type('image/png')
+        img = image.get_first_image()
         return img
+        
+        
+    @export(name='guestbook_view')
+    def guestbook(self):
+        return html.render('guestbook_view.html')
+        
+    @export(name='guestbook_write')
+    def guestbook_write(self):
+        return html.render('guestbook_write.html')
+        
+    @export(name='guestbook_add')
+    def guestbook_add(self):
+#        return html.render('guestbook_add.html')
+        return html.render('http://www.google.com')
