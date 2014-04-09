@@ -4,16 +4,13 @@
 import random
 import socket
 import time
-import os
 from urlparse import urlparse
 from StringIO import StringIO
 from wsgiref.validate import validator
 from sys import stderr
 import argparse
-#import quotes
 
-def handle_connection(conn, port, app):
-#def handle_connection(conn, port):
+def handle_connection(conn, port, wsgi_app):
     """Takes a socket connection, and serves a WSGI app over it.
         Connection is closed when app is served."""
     
@@ -86,84 +83,6 @@ def handle_connection(conn, port, app):
     
     # Get the application
 
-    if app == 'altdemo':
-
-        import quixote
-        from quixote.demo.altdemo import create_publisher
-       
-        try:
-            p = create_publisher()
-        except RuntimeError:
-            pass
-
-        wsgi_app = quixote.get_wsgi_app()
-
-    elif app == 'image':
-
-        import quixote
-        import imageapp
-        from imageapp import create_publisher
-        import sqlite3
-
-        try:
-            p = create_publisher()
-            imageapp.setup()
-
-        except RuntimeError:
-            pass
-
-        #imageapp.setup()
-        wsgi_app = quixote.get_wsgi_app()
-        db = sqlite3.connect('images.sqlite')
-        db.text_factory = bytes
-        c = db.cursor()
-        c.execute(
-            'CREATE TABLE IF NOT EXISTS image_store \
-            (i INTEGER PRIMARY KEY AUTOINCREMENT, image BLOB)'\
-            )
-        img = open('imageapp/dice.png', 'rb').read()
-        c.execute('INSERT INTO image_store (image) VALUES(?)', (img,))
-        db.commit()
-        db.close()
-        #
-
-    elif app == 'myapp':
-
-        from app import make_app
-
-        wsgi_app = make_app()
-
-    elif app == 'quotes':
-        
-        #from webserve import Server
-        #from quotes_app import QuotesApp
-        #os.chdir(app) 
-        #q_app = QuotesApp('quotes.txt', './quotes')
-        #Server(port, q_app).serve_forever()
-        from quotes.apps import QuotesApp as make_app
-        wsgi_app = make_app('quotes/quotes.txt', 'quotes/html')
-        #wsgi_app = QuotesApp('quotes.txt', './quotes')
-        #directory_path = './quotes/'
-        #wsgi_app = quotes.create_quotes_app(directory_path + 'quotes.txt', directory_path + 'html')
-
-
-    elif app == 'chat':
-
-        #from webserve import Server
-        #from chat_app import ChatApp        
-        #os.chdir(app)
-        #c_app = ChatApp('./chat')
-        #Server(port, c_app).serve_forever()
-
-        from chat.apps import ChatApp as make_app
-        wsgi_app = make_app('chat/html')
-        #wsgi_app = chat.create_chat_app('./chat/html')
-
-    elif app == 'cookie':
-
-        import cookieapp
-        wsgi_app = cookieapp.wsgi_app
-
     ## VALIDATION ##
     wsgi_app = validator(wsgi_app)
     ## VALIDATION ##
@@ -186,21 +105,74 @@ def main():
     # Get local machine name (fully qualified domain name)
     host = socket.getfqdn()
 
-
     argParser = argparse.ArgumentParser(description='Set up WSGI server')
-    argParser.add_argument('-A', metavar='App', type=str, nargs=1, \
-            default='myapp', \
-            choices=['myapp', 'image', 'altdemo', 'quotes', 'chat', 'cookie'], \
-            help='Select which app to run', dest='app')
-    argParser.add_argument('-p', metavar='Port', type=int, nargs=1, \
-            default=-1, help='Select a port to run on', \
-            dest='p')
+    argParser.add_argument('-A', metavar='App', type=str,
+                            default=['myapp'],
+                            choices=['myapp', 'image', 'altdemo', 
+                                     'chat', 'quotes', 'cookie'],
+                            help='Select which app to run', dest='app')
+    argParser.add_argument('-p', metavar='Port', type=int,
+                            default=-1, help='Select a port to run on',
+                            dest='p')
     argVals = argParser.parse_args()
-    # Bind to a (random) port
-    port = argVals.p[0] if argVals.p != -1 else random.randint(8000,9999)
-    #port = random.randint(8000, 9999)
-    #port = 8088
 
+    app = argVals.app
+    if app == 'altdemo': 
+
+        import quixote
+        from quixote.demo.altdemo import create_publisher
+        
+        p = create_publisher()
+        wsgi_app = quixote.get_wsgi_app()
+        ##
+
+    elif app == 'image':
+
+        import quixote
+        import imageapp
+        from imageapp import create_publisher
+        import sqlite3
+        
+        p = create_publisher()
+        imageapp.setup()
+        wsgi_app = quixote.get_wsgi_app()
+        db = sqlite3.connect('images.sqlite')
+        db.text_factory = bytes
+        c = db.cursor()
+        c.execute(
+                    'CREATE TABLE IF NOT EXISTS image_store \
+                    (i INTEGER PRIMARY KEY AUTOINCREMENT, image BLOB)'\
+                  )
+        img = open('imageapp/dice.png', 'rb').read()
+        c.execute("INSERT INTO image_store (image) VALUES(?)", (img,))
+        db.commit()
+        db.close()
+
+
+    elif app == 'myapp':
+
+        from app import make_app
+        
+        wsgi_app = make_app()
+
+    elif app == 'quotes':
+
+        from quotes.apps import QuotesApp as make_app
+        wsgi_app = make_app('quotes/quotes.txt', 'quotes/html')
+        
+    elif app == 'chat':
+
+        from chat.apps import ChatApp as make_app
+        wsgi_app = make_app('chat/html')
+
+    elif app == 'cookie':
+
+        import cookieapp
+        wsgi_app = cookieapp.wsgi_app
+
+
+    # Bind to a (random) port
+    port = argVals.p if argVals.p != -1 else random.randint(8000,9999)
     sock.bind((host, port))
 
     print 'Starting server on', host, port
@@ -210,14 +182,13 @@ def main():
     sock.listen(5)
 
     print 'Entering infinite loop; hit CTRL-C to exit'
-    # Whichever app we chose
+    # Determine which web app to serve
     app = argVals.app[0]
-    
     while True:
         # Establish connection with client.    
         conn, (client_host, client_port) = sock.accept()
         print 'Got connection from', client_host, client_port
-        handle_connection(conn, port, app)
+        handle_connection(conn, port, wsgi_app)
         
 # boilerplate
 if __name__ == "__main__":

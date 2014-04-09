@@ -11,11 +11,7 @@ class RootDirectory(Directory):
     @export(name='')                    # this makes it public.
     def index(self):
         return html.render('index.html')
-
-#    @export(name='jquery')
-#    def jquery(self):
-#        return html.render('jquery-1.3.2.min.js')
-
+        
     @export(name='jquery.js')
     def jquery(self):
         return javascript.render('jquery-1.11.0.min.js')
@@ -23,7 +19,7 @@ class RootDirectory(Directory):
     @export(name='ajaxUpload.js')
     def ajax_upload(self):
         return javascript.render('ajaxUpload.js')
-
+        
     @export(name='upload')
     def upload(self):
         return html.render('upload.html')
@@ -42,6 +38,7 @@ class RootDirectory(Directory):
 
         return quixote.redirect('./')
 
+
     @export(name='upload2')
     def upload2(self):
         return html.render('upload2.html')
@@ -59,7 +56,7 @@ class RootDirectory(Directory):
         image.add_image(the_file.base_filename, data)
 
         return html.render('upload2_received.html')
-
+        
     @export(name='image')
     def image(self):
         return html.render('image.html')
@@ -67,13 +64,6 @@ class RootDirectory(Directory):
     @export(name='image_raw')
     def image_raw(self):
         response = quixote.get_response()
+        response.set_content_type('image/png')
         img = image.get_latest_image()
-
-        if img[0].split('.')[-1].lower() in ('jpeg', 'jpg'):
-            response.set_content_type('image/jpeg')
-        elif img[0].split('.')[-1].lower() in ('tif', 'tiff'):
-            response.set_content_type('image/tiff')
-        else:
-            response.set_content_type('image/png')
-        
-        return img[1]
+        return img
