@@ -36,3 +36,20 @@ image and it will load the image without changing the page.
 * * * Instructions:
 * * * Just run the imageapp like above and you will see I have added the
 ugliest template on oswd.org that i could find.  It's called "grapes"
+
+* Completed Homework 11
+* * Project 5: Image meta-data
+* * * Instructions:
+* * * Launch image app like described above, when you choose to upload an
+image, you will be asked to add a name and a description for the image.
+* * Project 6: Oldest Image
+* * * Instructions:
+* * * The homepage of image app now displays the oldest image in the
+database as well as the newest image in the database.  I am thinking about
+expanding this to be a dropdown menu where you can select an index from the
+database and it will pull the image of that index.
+* * Project 7: Guestbook
+* * * Instructions:
+* * * This is what I sunk most of my time into.  Unfortunately, I am having
+some trouble getting it to work properly.  Something about using PHP is 
+giving me trouble I think.

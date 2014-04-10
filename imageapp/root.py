@@ -34,11 +34,17 @@ class RootDirectory(Directory):
         print request.form.keys()
 
         the_file = request.form['file']
+        name = request.form['image_name']
+        desc = request.form['image_desc']
+
         print dir(the_file)
-        print 'received file with name:', the_file.base_filename
+        print 'received file with name: ', the_file.base_filename
+        print 'image name: ', name
+        print 'image desc: ', desc
+
         data = the_file.read(the_file.get_size())
 
-        image.add_image(the_file.base_filename, data)
+        image.add_image(the_file.base_filename, data, name, desc)
 
         return quixote.redirect('./')
 
@@ -54,18 +60,23 @@ class RootDirectory(Directory):
         print request.form.keys()
 
         the_file = request.form['file']
+        name = request.form['image_name']
+        desc = request.form['image_desc']
+        
         print dir(the_file)
         print 'received file with name:', the_file.base_filename
         data = the_file.read(the_file.get_size())
 
-        image.add_image(the_file.base_filename, data)
+        image.add_image(the_file.base_filename, data, name, desc)
 
         return html.render('upload2_received.html')
         
         
     @export(name='image')
     def image(self):
-        return html.render('image.html')
+        #return html.render('image.html')
+        return html.render('image.html', {'image_name' : image.get_latest_image()[1], 'image_desc' : image.get_latest_image()[2]})
+
 
         
     @export(name='image_raw')
@@ -73,6 +84,7 @@ class RootDirectory(Directory):
         response = quixote.get_response()
         response.set_content_type('image/png')
         img = image.get_latest_image()
+        #img = image.get_latest_image()[0]
         return img        
         
     @export(name='image_raw2')

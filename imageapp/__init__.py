@@ -16,7 +16,7 @@ def setup():                            # stuff that should be run once.
     javascript.init_javascript()
 
     some_data = open('imageapp/dice.png', 'rb').read()
-    image.add_image('imageapp/dice.png', some_data)
+    image.add_image('imageapp/dice.png', some_data, 'Dice', 'the default image')
 
 
 def teardown():                         # stuff that should be run once.

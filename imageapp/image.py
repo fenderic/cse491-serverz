@@ -10,11 +10,12 @@ def load():
 def save():
     return
 
-def add_image(filename, data):
+def add_image(filename, data, name, desc):
     db = sqlite3.connect('images.sqlite')
     db.text_factory = bytes
     c = db.cursor()
     c.execute('INSERT INTO image_store (image) VALUES(?)', (data,))
+    # need to store name and description somewhere in the DB
     db.commit()
     db.close()
 

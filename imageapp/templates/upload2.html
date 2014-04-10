@@ -5,7 +5,10 @@ Upload a PNG, JPG, JPEG, TIF, or TIFF (other version):
 
 <form enctype='multipart/form-data' action='upload2_receive' method='POST'>
 Filename: <input type='file' name='file'><p>
-<input type='submit'>
+  Image Name: <input type='text' name='image_name' id='image_name'> </br>
+  Image Desc: <input type='text' name='image_desc' id='image_desc'> </br>
+
+  <input type='submit'>
 </form>
 
 {% endblock %}
