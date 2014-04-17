@@ -53,3 +53,16 @@ database and it will pull the image of that index.
 * * * This is what I sunk most of my time into.  Unfortunately, I am having
 some trouble getting it to work properly.  Something about using PHP is 
 giving me trouble I think.
+
+* Completed Homework 12
+* * Project 8: Map
+* * * Instructions:
+* * * From the index page of imageapp, click on the Maps tab on the side.
+I used the Google Static Maps API to pull an image of Napa Valley (where
+grapes are grown).
+* * Project 9: #grapes
+* * * Instructions:
+* * * From the index page of imageapp, click the tab that says '#grapes'.
+Using the Twitter API, I pulled a list of tweets that contained the hashtag
+'#grapes'.
+
