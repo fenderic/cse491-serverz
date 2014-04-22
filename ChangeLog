@@ -63,6 +63,5 @@ grapes are grown).
 * * Project 9: #grapes
 * * * Instructions:
 * * * From the index page of imageapp, click the tab that says '#grapes'.
-Using the Twitter API, I pulled a list of tweets that contained the hashtag
-'#grapes'.
-
+Using the Instagram API, I pulled a list of recent photos that contained
+the hashtag '#grapes'.
