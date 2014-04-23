@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-Upload a PNG, JPG, JPEG, TIF, or TIFF (other version):
-
+<h2>Upload a PNG, JPG, JPEG, TIF, or TIFF (other version):</h2>
+</br></br></br>
 <form enctype='multipart/form-data' action='upload2_receive' method='POST'>
 Filename: <input type='file' name='file'><p>
   Image Name: <input type='text' name='image_name' id='image_name'> </br>
@@ -10,5 +10,6 @@ Filename: <input type='file' name='file'><p>
 
   <input type='submit'>
 </form>
-
+</br>
+<a href="/">Back to Home</a>
 {% endblock %}

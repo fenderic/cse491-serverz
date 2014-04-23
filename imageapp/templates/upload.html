@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-Upload with AJAX:
+<h2>Upload with AJAX:</h2>
 
 <form id='form' enctype='multipart/form-data' action='upload_receive' method='POST'>
-Filename: <input id='file' type='file' name='file'><p>
-  Image Name: <input type='text' name='image_name' id='image_name'></br>
-  Image Desc: <input type='text' name='image_desc' id='image_desc'></br>
-  <input style='display:none' type='submit'>
+  Image Name: <input type='text' name='image_name' id='image_name'></br></br>
+  Image Desc: <input type='text' name='image_desc' id='image_desc'></br></br>
+  Filename: <input id='file' type='file' name='file'><p></br></br>
+  <input style='display:none;' type='submit'>
 </form>
-</br> Since this is AJAX upload, make sure you type in your image name and description BEFORE you upload the image!</br> 
-<span id='success' style='display:none'>Successful Upload!
+</br><span style='color:white;'>Since this is AJAX upload, make sure you type in your image name and description BEFORE you upload the image!</span></br> 
+<span id='success' style='color:white; display:none;'>Successful Upload!
 </br>
 <img id='image' src=''/>
 </span>
