@@ -99,15 +99,6 @@ class RootDirectory(Directory):
         return html.render('quotes.html')
         
         
-    @export(name='guestbook_view')
+    @export(name='guestbook')
     def guestbook(self):
-        return html.render('guestbook_view.html')
-        
-    @export(name='guestbook_write')
-    def guestbook_write(self):
-        return html.render('guestbook_write.html')
-        
-    @export(name='guestbook_add')
-    def guestbook_add(self):
-#        return html.render('guestbook_add.html')
-        return html.render('http://www.google.com')
+        return html.render('guestbook.html')
