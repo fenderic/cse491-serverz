@@ -66,6 +66,12 @@ grapes are grown).
 Using the Instagram API, I pulled a list of recent photos that contained
 the hashtag '#grapes'.
 
-* Working on Homework 13
+* Completed  Homework 13
 * * Made changes that Titus to be done before May 1
 * * Updated styling on some pages
+* * Fixed the guestbook feature
+* * Project 10: Quotes
+* * * Instructions:
+* * * From the index page of imageapp, click the tab titled 'Quotes'.
+On this page you can click the button to generate a random inspirational
+quote that references grapes.
