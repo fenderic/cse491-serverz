@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script type='text/javascript'></script>
+
+<h2>Grape Quotes</h2>
+</br><span style='color:white;'>Inspirational quotes about grapes!</span></br> 
+
+<button onclick="getQuote()">Quote</button>
+
+<p id="grapequote" style="background:#CBCC31;"></p>
+
+<script>
+function getQuote() {
+    var num = Math.floor((Math.random()*7)+1);
+
+    switch (num) {
+      case 1:
+	x="\"People pretend not to like grapes when the vines are too high for them to reach.\" -- Marguerite de Navarre";
+	break;
+      case 2:
+	x="\"The juice of the grape is the liquid quintessence of concentrated sunbeams.\" -- Thomas Love Peacock";
+	break;
+      case 3:
+	x="\"God gave man feet for which to walk. And crush grapes. Can I get you a glass of wine?  It's homemade, though it kind of smells funky.\" -- Jarod Kintz";
+	break;
+      case 4:
+	x="\"The fight is never about grapes or lettuce.  It is always about people.\" -- Cesar Chavez";
+	break;
+      case 5:
+	x="\"There is stuff I would have liked to have done.  But there are no sour grapes.\" -- Frank Gehry";
+	break;
+      case 6:
+	x="\"What I do and what I dream include thee, as the wine must taste of its own grapes.\" -- Elizabeth Barrett Browning";
+	break;
+      case 7:
+	x="\"You cannot eat a cluster of grapes at once, but it is very easy if you eat them one by one.\" -- Jacques Roumain";
+	break;
+     } 
+    
+    document.getElementById("grapequote").innerHTML = x;
+}
+</script>
+
+</br>
+
+<a href="/">Back to Home</a>
+
+{% endblock %}

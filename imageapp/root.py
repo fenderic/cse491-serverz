@@ -94,6 +94,11 @@ class RootDirectory(Directory):
         return img
         
         
+    @export(name='quotes')
+    def quotes(self):
+        return html.render('quotes.html')
+        
+        
     @export(name='guestbook_view')
     def guestbook(self):
         return html.render('guestbook_view.html')
